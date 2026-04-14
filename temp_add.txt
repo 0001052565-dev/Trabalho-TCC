@@ -1,0 +1,84 @@
+﻿'11111111111111111111111111111111111111111111111111111111111111111111111111111111111111    // Função para alternar telas
+    function showScreen(screen) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screen + 'Screen').classList.add('active');
+        if (screen === 'home') {
+            carregarDocumentos();
+        }
+        if (screen === 'camera') {
+            iniciarCamera();
+        }
+    }
+
+    // Função para voltar ao home
+    function voltarHome() {
+        showScreen('home');
+    }
+
+    // Função para sair
+    function sair() {
+        if (confirm('Deseja sair do sistema?')) {
+            // Simulação de logout
+            alert('Logout realizado.');
+            // Poderia redirecionar ou limpar dados
+        }
+    }
+
+    // Função para enviar mensagem no chat
+    function enviarMsg() {
+        const msg = document.getElementById('msgInput').value.trim();
+        if (msg) {
+            const chatBox = document.getElementById('chatBox');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg-tec';
+            msgDiv.innerHTML = <strong>Técnico:</strong><br>20{msg};
+            chatBox.appendChild(msgDiv);
+            document.getElementById('msgInput').value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    // Variável para armazenar o stream da câmera
+    let stream;
+
+    // Função para iniciar a câmera
+    async function iniciarCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.getElementById('camera');
+            video.srcObject = stream;
+            video.style.display = 'block';
+            document.getElementById('capturedImg').style.display = 'none';
+        } catch (err) {
+            alert('Erro ao acessar a câmera: ' + err.message);
+        }
+    }
+
+    // Função para capturar imagem
+    function capturar() {
+        const video = document.getElementById('camera');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        const imgData = canvas.toDataURL('image/png');
+        document.getElementById('capturedImg').src = imgData;
+        document.getElementById('capturedImg').style.display = 'block';
+        video.style.display = 'none';
+        document.getElementById('btnCap').classList.add('d-none');
+        document.getElementById('btnSave').classList.remove('d-none');
+        // Parar o stream da câmera
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    }
+
+    // Inicializar ao carregar a página
+    window.onload = function() {
+        carregarDocumentos();
+    };
+
+</script>
+</body>
+</html>
